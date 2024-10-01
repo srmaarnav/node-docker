@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Root@1234
+      MYSQL_DATABASE: my_database
+    ports:
+      - "6556:3306"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  nodeapp:
+    image: sharmaarnav/hello-world-app:v5
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      env_file: .env
+    volumes:
+      - hello-world-volume:/app/uploads
+    ports:
+      - "9000:8088"
+    restart: always
+
+volumes:
+  hello-world-volume:

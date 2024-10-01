@@ -1,24 +1,49 @@
+require('dotenv').config(); 
+
+// Import the Express module
 const express = require('express');
-const dotenv = require('dotenv');
+const mysql = require('mysql2');
 
-// Load environment variables from .env file
-dotenv.config();
 
+// Create an Express application
 const app = express();
 
-// Use USER_NAME from .env if available, otherwise fallback to server's hostname
-const userName = process.env.USER_NAME || "Guest";
 
-app.get('/', (req, res) => {
-  res.send("Hello World !! \n");
+// Create a MySQL connection
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
+
+// Try to connect to the database
+connection.connect((err) => {
+  if (err) {
+    console.error('Database connection failed:', err.stack);
+    return;
+  }
+  console.log('Database connected successfully.');
+});
+
+
+
+// Define a route for the root URL ('/')
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+
+const name = process.env.NAME || 'Guest'; 
 
 app.get('/name', (req, res) => {
-  res.send(`Hello, ${userName}!! \n`);	
+    res.send(`My name is ${name}`);
 });
 
-const PORT = 8080;
 
+// Start the server on port 3000
+const PORT = process.env.PORT||3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
+
