@@ -28,11 +28,11 @@ jobs:
           docker push sharmaarnav/hello-world-app:v5
 
       - name: Deployment
-        uses: sebastianjnuwu/ssh-action-deploy@v3
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          IP: ${{ secrets.SERVER_IP }}
-          USER: ${{ secrets.SERVER_USER }}
-          KEY: ${{ secrets.SERVER_KEY }}
-          RUN:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script:
             docker pull sharmaarnav/hello-world-app:v5
             docker compose -f /app/docker-compose.yml up -d
