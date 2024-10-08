@@ -1,0 +1,38 @@
+name: CICD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  cicd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v3.7.1
+
+      - name: Login to dockerhub
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push
+        run: |
+          docker build . sharmaarnav/hello-world-app:v5
+          docker push sharmaarnav/hello-world-app:v5
+
+      - name: Deployment
+        uses: sebastianjnuwu/ssh-action-deploy@v3
+        with:
+          IP: ${{ secrets.SERVER_IP }}
+          USER: ${{ secrets.SERVER_USER }}
+          KEY: ${{ secrets.SERVER_KEY }}
+          RUN:
+            docker pull sharmaarnav/hello-world-app:v5
+            docker compose -f /app/docker-compose.yml up -d
