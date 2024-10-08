@@ -33,6 +33,6 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
-          script:
+          script: |
             docker pull sharmaarnav/hello-world-app:v5
             docker compose -f /app/docker-compose.yml up -d
